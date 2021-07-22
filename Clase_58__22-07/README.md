@@ -1,3 +1,92 @@
+# MODULO 4 | Desarrollo de Aplicaciones Móviles Android Kotlin | Ignacio Cavallo
+
+
+
+https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin
+
+## Clase 58 | 22-07
+
+Siento que las clases han dejado de ser productivas, hoy literalmente, estuvimos cuatro horas en silencio. No se impartió nada, salvo una directiva de aprender de forma autodidacta temas que podrian haber sido explicados en clase en unos 15 minutos. Es por ello que sigo con mi lineamiento de realizar tutoriales para aprender todos los temas relevantes de este módulo considerando que por como vamos, no nos ensañaran mucho. Hoy hice en Jetpack compose un boton animado de registro. Por cierto, el gif ha sido grabado desde mi celular
+
+# RESULTADO
+
+![](animatedbutton.gif)
+
+
+
+
+# CODIGO
+
+
+## `MainActivity.kt`
+```kotlin
+package com.example.googlebuttoncompose
+
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.googlebuttoncompose.ui.theme.GoogleButtonComposeTheme
+
+class MainActivity : ComponentActivity() {
+    @ExperimentalMaterialApi
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            GoogleButtonComposeTheme {
+                Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    GoogleButton(
+                        text = "Registrate con Google",
+                        loadingText = "Creando Cuenta...",
+                        onClicked = {
+                            Log.d("Google Button", "Clicked")
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@ExperimentalMaterialApi
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    GoogleButtonComposeTheme {
+        Column {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                GoogleButton(
+                    text = "Registrate con Google",
+                    loadingText = "Creando Cuenta...",
+                    onClicked = {
+                        Log.d("Google Button", "Clicked")
+                    }
+                )  }
+
+            }
+        }
+        }
+```
+
+## `GoogleButton.kt`
+```kotlin
 package com.example.googlebuttoncompose
 
 import androidx.compose.animation.animateContentSize
@@ -88,3 +177,7 @@ private fun GoogleButtonPreview() {
         onClicked = {}
     )
 }
+```
+
+
+![](resultado.png)
