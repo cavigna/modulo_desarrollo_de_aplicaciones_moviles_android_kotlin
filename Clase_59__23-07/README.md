@@ -6,7 +6,7 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 59 | 23-07
 
-Nuevamente, la clases no aportan en nada. En fin, como no me gusta perder el tiempo, estoy aprendiendo sobre fragmentos, menús como también componentes de navegación.
+Nuevamente, la clases no aportan en nada y eso agrava la falte de motivación propia y de mis compañeros. En fin, como no me gusta perder el tiempo, estoy aprendiendo sobre fragmentos, menús como también componentes de navegación.
 # RESULTADO
 
 ![](fragments.gif)
