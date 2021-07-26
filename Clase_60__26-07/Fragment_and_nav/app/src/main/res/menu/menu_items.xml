@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Taxi"
+        android:id="@+id/taxi_item"
+        android:icon="@drawable/ic_baseline_local_taxi_24"
+        />
+    <item android:title="Avion"
+        android:id="@+id/avion_item"
+        android:icon="@drawable/ic_baseline_airplanemode_active_24"/>
+
+    <item android:title="Barco"
+        android:id="@+id/barco_item"
+        android:icon="@drawable/ic_baseline_directions_boat_24"/>
+</menu>
