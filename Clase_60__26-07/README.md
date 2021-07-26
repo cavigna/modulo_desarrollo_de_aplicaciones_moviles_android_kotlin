@@ -4,7 +4,7 @@
 
 https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin
 
-## Clase 60 | 23-07
+## Clase 60 | 26-07
 
 Ejercicio Mostrado en clase
 # RESULTADO
