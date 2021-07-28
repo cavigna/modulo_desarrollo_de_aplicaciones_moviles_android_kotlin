@@ -1,27 +1,3 @@
-# MODULO 4 | Desarrollo de Aplicaciones Móviles Android Kotlin | Ignacio Cavallo
-
-
-
-https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin
-
-## Clase 62 | 28-07
-
- Ejercicio Propuesto por el Prof.
-
-![](./imagenes/ejercicio1.jpeg)
-
-# RESULTADO
-
-![](./imagenes/factorial.png)
-
-
-
-
-# CODIGO
-
-
-## `MainActivity.kt`
-```kotlin
 package com.example.factorialhilo
 
 import androidx.appcompat.app.AppCompatActivity
@@ -40,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-       
+
 
 
 
@@ -64,9 +40,3 @@ class MainActivity : AppCompatActivity() {
 
 
 }
-
-
-```
-
-
-![](resultado.png)
