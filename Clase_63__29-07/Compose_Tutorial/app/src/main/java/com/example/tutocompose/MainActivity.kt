@@ -1,25 +1,3 @@
-# MODULO 4 | Desarrollo de Aplicaciones Móviles Android Kotlin | Ignacio Cavallo
-
-
-
-https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin
-
-## Clase 63 | 29-07
-
- Hice un tutorial de Compose
-# RESULTADO
-
-![](composecode.jpg)
-
-
-
-
-# CODIGO
-
-
-## `MainActivity.kt`
-```kotlin
-
 package com.example.tutocompose
 
 import android.os.Bundle
@@ -95,7 +73,4 @@ fun DefaultPreview() {
     }
 }
 
-```
 
-
-![](resultado.png)
