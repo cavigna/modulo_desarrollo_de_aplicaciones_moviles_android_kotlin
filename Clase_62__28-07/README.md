@@ -6,6 +6,8 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 62 | 28-07
 
+La clase de hoy viene repitiendo la misma lógica de las últimas semanas. EL profesor hace aparición a las 8:30 para saludar, dar alguna directiva y de ahí silencio total. Luego regresa a las 10 para avisarnos del break, y finalmente aparece a las 12:30 para despedirse. Literalmente habla o dice algo 10 minutos de 4 horas. Y ya nos quejamos con AIEP y no hubo ningún cambio. Esta es mi reflexión, ESTOY APRENDIENDO CON ALGUNOS COMPAÑEROS, POR NUESTRA CUENTA, ya que en clase se enseña POCO O NADA. Por mi parte, creo que deberiamos sentarnos a discutir sobre los el temario del curso. 
+
  Ejercicio Propuesto por el Prof.
 
 ![](./imagenes/ejercicio1.jpeg)
