@@ -6,6 +6,9 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 61 | 27-07
 
+
+Por pedido de la coordinadora, vuelvo a escribir una reflexión. Pensarán que no lo hice por pereza o flojera, pero en realidad, al no tener un feedback de nadie,  no sabemos si efectivamente alguién ve nuestro trabajo. Hoy el profesor nos enseño sobre hilos, pero no se entendió mucho su explicación. De hecho, fuera de clase estuvimos con compañeros aprendiendo un poco sobre el tema.
+
 Ejercicio Propuesto por el Prof.
 # RESULTADO
 
