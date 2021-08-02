@@ -6,6 +6,11 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 60 | 26-07
 
+
+Bueno, en esta clase nos enseñaron fragmentos, pero la verdad no me quedó muy claro, de todas formas seguí lo propuesto.
+Mi reflexión del día es que, estamos perdiendo HORAS de aprendizaje, y la verdad que estoy demasiado desmotivado. A tal punto, que este párrafo que están leyendo
+es una adicción que hice por pedido de la coordinadora académica. Si ven, hasta las ultimas semanas realizaba evidencias extensas, a medida que pasaron las semanas mi motivación como la de muchos compañeros, decayó sustancialmente por motivo de el contenido impartido en el curso. 
+
 Ejercicio Mostrado en clase
 # RESULTADO
 
