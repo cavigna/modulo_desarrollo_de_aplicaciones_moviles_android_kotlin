@@ -6,6 +6,13 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 63 | 29-07
 
+Para mi reflexión, básicamente voy a hacer lo mismo que se viene haciendo las ultimas clases, repetición de patrones que no aportan en nada. Por eso repito:
+>La clase de hoy viene repitiendo la misma lógica de las últimas semanas. El profesor hace aparición a las 8:30 para saludar, dar alguna directiva y de ahí silencio total. Luego regresa a las 10 para avisarnos del break, y finalmente aparece a las 12:30 para despedirse. Literalmente habla o dice algo 10 minutos de 4 horas.  
+
+Por lo mismo, decidí hacer un tutorial de Jetpack Compose,la nueva librería de Android. No voy a permitir que ninguna clase no aprenda algo, y si el profesor no lo hace, lo haré yo. 
+
+### Pido disculpas si mis relfexiones son un poco negativas, el tema es que estamos muy frustrados, y por aquí es uno de los poco canales donde puedo expresar lo que siento.
+
  Hice un tutorial de Compose
 # RESULTADO
 
