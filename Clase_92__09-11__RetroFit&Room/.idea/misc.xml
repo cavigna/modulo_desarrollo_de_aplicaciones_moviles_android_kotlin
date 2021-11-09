@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Curso_Android/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin/Clase_92__09-11__RetroFit&amp;Room/app/src/main/res/layout/activity_main.xml" value="0.22314814814814815" />
+        <entry key="..\:/Curso_Android/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin/Clase_92__09-11__RetroFit&amp;Room/app/src/main/res/layout/fragment_details.xml" value="0.22314814814814815" />
+        <entry key="..\:/Curso_Android/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin/Clase_92__09-11__RetroFit&amp;Room/app/src/main/res/layout/fragment_home.xml" value="0.22314814814814815" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
