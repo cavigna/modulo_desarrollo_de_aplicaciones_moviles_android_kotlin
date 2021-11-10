@@ -6,9 +6,12 @@ import com.example.inmobiliariagalactica.network.ApiService
 
 class Repositorio(private val api: ApiService, private val dao: GalacticaDao) {
 
-    suspend fun listadoTerrenos() = api.listadoTerrenos()
+    suspend fun listadoTerrenosAPI() = api.listadoTerrenos()
 
     suspend fun agregarListadoDB(listaT : List<Terreno>) = dao.agregarListadoDB(listaT)
+
     fun listadoTerrenosDB() = dao.listadoTerrenoDB()
+
+    fun conteoDB() = dao.conteoDB()
 
 }

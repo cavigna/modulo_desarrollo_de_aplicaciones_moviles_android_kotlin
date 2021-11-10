@@ -27,6 +27,10 @@ class GalacticViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         binding.imageViewGal.scaleType = FIT_XY
 
         binding.imageViewGal.load(terreno.imgSrc)
+
+        /*
+        with. load. into..
+         */
     }
 
 }

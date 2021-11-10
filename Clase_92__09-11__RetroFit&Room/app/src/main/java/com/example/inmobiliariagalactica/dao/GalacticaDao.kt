@@ -16,4 +16,7 @@ interface GalacticaDao {
 
     @Query("SELECT * FROM terreno")
     fun listadoTerrenoDB() : Flow<List<Terreno>>
+
+    @Query("SELECT COUNT(*) FROM terreno")
+    fun conteoDB() : Flow<Int>
 }
