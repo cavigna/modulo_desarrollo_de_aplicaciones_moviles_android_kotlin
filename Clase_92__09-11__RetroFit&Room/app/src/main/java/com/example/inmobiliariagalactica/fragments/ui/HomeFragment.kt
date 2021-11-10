@@ -1,34 +1,35 @@
 package com.example.inmobiliariagalactica.fragments.ui
 
+import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import coil.load
-import com.example.inmobiliariagalactica.R
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.inmobiliariagalactica.adapter.TerrenoListAdapter
 import com.example.inmobiliariagalactica.application.GalacticaApplication
 import com.example.inmobiliariagalactica.databinding.FragmentHomeBinding
 import com.example.inmobiliariagalactica.viewmodel.GalacticaModelFactory
 import com.example.inmobiliariagalactica.viewmodel.GalacticaViewModel
-import kotlinx.coroutines.MainScope
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
+    private lateinit var application: Application
+
     private val viewModel : GalacticaViewModel by activityViewModels {
-        GalacticaModelFactory((requireActivity().application as GalacticaApplication).repository)
+        GalacticaModelFactory((application as GalacticaApplication).repository)
     }
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        application = requireActivity().application
 
     }
 
@@ -38,6 +39,29 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
 
+        val recyclerView = binding.recyclerView
+        val adapter = TerrenoListAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL,false)
+
+        viewModel.listaTerrenosDB.observe(viewLifecycleOwner, {
+            adapter.submitList(it)
+        })
+
+        viewModel.currentTerreno.value = adapter.terrenoA
+
+
+
+
+
+
+        return binding.root
+    }
+
+
+}
+
+/*
 //        viewModel.listaTerreno.observe(viewLifecycleOwner, {
 //            val terreno = it[0]
 //
@@ -52,8 +76,4 @@ class HomeFragment : Fragment() {
 
            Log.i("rpeuba", algo.toString())
        }
-        return binding.root
-    }
-
-
-}
+ */

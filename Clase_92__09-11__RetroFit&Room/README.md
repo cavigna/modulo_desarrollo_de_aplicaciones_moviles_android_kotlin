@@ -6,12 +6,13 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 ## Clase 92 | 09-11
 
-En la calse de hoy se propuso un ejercicio muy desafiante que consiste en aplicar lo aprendido en hasta el momento. Este consiste en hacer una llamda a una API, y con esa información gaurdarla de forma interna en una Base de Datos usando ROOM.
+En la clase de hoy se propuso un ejercicio muy desafiante que consiste en aplicar lo aprendido en hasta el momento. Este consiste en hacer una llamada a una API, y con esa información guardarla de forma interna en una Base de Datos usando ROOM.
 El principal desafio será combinar fuentes de datos de forma local como remotas, a partir del patrón de vista MODELO VISTA VISTA MODELO. Estas fuentes de datos estarán contenidas en un repositorio.
+Más allá de algún contratiempo con el Gradle, la aplicación es funcional y busca datos de forma remota y lo almacena en la base de datos local.
+Usando MVVM, simplemente la vista observa los cambios de la base de datos a través del viewmodel.
 
 
-
-> ......
+> Dejo a continuación una parte del código. En el fragmento principal vemos el accionar del viewmodel, con un listado desde la base de datos(este a su vez recibe los datos desde una API).
 
 
 
@@ -24,42 +25,42 @@ El principal desafio será combinar fuentes de datos de forma local como remotas
 
 ## `MainActivity.kt`
 ```kotlin
-package com.example.booksv1
+class HomeFragment : Fragment() {
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-import androidx.lifecycle.lifecycleScope
-import com.example.booksv1.RetrofitInstance.retroService
-import com.example.booksv1.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
+    private lateinit var binding: FragmentHomeBinding
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var application: Application
+
+    private val viewModel : GalacticaViewModel by activityViewModels {
+        GalacticaModelFactory((application as GalacticaApplication).repository)
+    }
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+        application = requireActivity().application
 
-
-        lifecycleScope.launchWhenCreated {
-            val response = retroService.searchByName()
-            val data = response.body()!!
-
-            if (response.isSuccessful){
-                Log.v("Libros", response.body().toString())
-                binding.tvprueba.text = data.items.get(0).volumeInfo.title
-
-            }
-        }
     }
 
-    private fun getBookByName(){
-        lifecycleScope.launch{
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
 
-        }
+        val recyclerView = binding.recyclerView
+        val adapter = TerrenoListAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = GridLayoutManager(requireContext(), 1, GridLayoutManager.VERTICAL,false)
+
+        viewModel.listaTerrenosDB.observe(viewLifecycleOwner, {
+            adapter.submitList(it)
+        })
+
+
+        return binding.root
     }
-}
 
 
 ```

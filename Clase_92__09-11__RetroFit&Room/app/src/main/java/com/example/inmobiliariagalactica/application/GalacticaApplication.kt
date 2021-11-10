@@ -21,12 +21,12 @@ class GalacticaApplication : Application() {
     }
 
 
-    val baseDeDatos by lazy { BaseDeDatos.getDataBase(this) }
+    private val baseDeDatos by lazy { BaseDeDatos.getDataBase(this) }
     val repository by lazy { Repositorio(retrofitClient, baseDeDatos.dao()) }
 
 
 
-    val galFactory = GalacticaModelFactory(repository)
+    //val galFactory = GalacticaModelFactory(repository)
 
     //val viewModel : GalacticaViewModel = ViewModelProvider(this, galFactory)
 

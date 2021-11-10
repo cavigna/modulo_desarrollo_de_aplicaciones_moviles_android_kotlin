@@ -1,9 +1,6 @@
 package com.example.inmobiliariagalactica.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.inmobiliariagalactica.model.Terreno
 import com.example.inmobiliariagalactica.repository.Repositorio
 import kotlinx.coroutines.launch
@@ -15,12 +12,18 @@ class GalacticaViewModel(private val repositorio: Repositorio) : ViewModel(){
 
     }
 
+    val currentTerreno = MutableLiveData<Terreno>()
+
     private val _listaTerreno = MutableLiveData<List<Terreno>>()
     val listaTerreno: LiveData<List<Terreno>> = _listaTerreno
 
+    val listaTerrenosDB = repositorio.listadoTerrenosDB().asLiveData()
+
     fun listadoTerrenos(){
         viewModelScope.launch {
-            _listaTerreno.postValue(repositorio.listadoTerrenos())
+
+
+            repositorio.agregarListadoDB(repositorio.listadoTerrenos())
         }
     }
 

@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 @Entity
 data class Terreno(
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @SerializedName("id")
     var id: String = "",
     @SerializedName("img_src")
