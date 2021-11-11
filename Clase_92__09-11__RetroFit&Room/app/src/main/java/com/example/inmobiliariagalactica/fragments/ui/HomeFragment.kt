@@ -18,7 +18,10 @@ import com.example.inmobiliariagalactica.application.GalacticaApplication
 import com.example.inmobiliariagalactica.databinding.FragmentHomeBinding
 import com.example.inmobiliariagalactica.viewmodel.GalacticaModelFactory
 import com.example.inmobiliariagalactica.viewmodel.GalacticaViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.runBlocking
 
 
 class HomeFragment : Fragment() {
@@ -72,8 +75,6 @@ class HomeFragment : Fragment() {
 
 
         //viewModel.checkIfDBEmpty()
-
-
 
 
 

@@ -4,7 +4,9 @@ import androidx.lifecycle.*
 import com.example.inmobiliariagalactica.model.Terreno
 import com.example.inmobiliariagalactica.network.ApiService
 import com.example.inmobiliariagalactica.repository.Repositorio
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class GalacticaViewModel(private val repositorio: Repositorio) : ViewModel() {
 
@@ -57,6 +59,9 @@ class GalacticaViewModel(private val repositorio: Repositorio) : ViewModel() {
         }
 
     }
+
+
+
 
 
 }
