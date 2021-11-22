@@ -41,7 +41,7 @@ Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia d
 
 Como se puede observar, la vista requerirá información la cual será solicitará al *View Model* y este a su vez llamará al repositorio.
 
-## News App
+# News App
 
 api = https://newsapi.org/
 
@@ -116,6 +116,19 @@ Como vemos, cada uno de los atributos de cada clase, se corresponde con las entr
 ```
 
 ## 2 - API Service
+
+Uttilizando RetroFit, creamos una interfaz que realizará las llamadas a la API. Nuestro objetivo es replicar la siguiente llamada
+**``https://newsapi.org/v2/top-headlines?country=ar&apiKey=...&pageSize=50``**
+
+
+1. Usamos la anotación ``@Get`` para avisar a que es una llamada de tipo get.
+2. Como argumento, completamos la dirección luego de la urlBase
+3. Usamos las anotiaciones ``@Query`` para completar las diferentes secciones de el llamado:
+   a. country
+   b. apiKey
+   c. pageSize
+4. Es una función de tipo suspend, debido a que se ejecutará con una corrutina, ya que es de tipo asíncrono.
+
 ```kotlin
 interface ApiService {
 
@@ -132,13 +145,145 @@ interface ApiService {
     
     }
 ```
+## 3 - Retrofit Client
+
+Será el encargado de implenetar la interfaz antes mencionadas.
+
+```kotlin
+            private val retrofitNewsClient  by lazy {
+            Retrofit.Builder()
+                .baseUrl("https://newsapi.org/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+
+        }
+```
+
+## 4 - Repositorio
+Crearemos un repositorio con un argumento  el servicio definido en el punto 2. Más adelante le agregaremos otro argumento más, el ``Dao``. Por ahora quedaría así:
+
+```kotlin
+class Repositorio(private val api: ApiService) {
+
+    suspend fun traerUltimasNoticiasAr() = api.traerUltimasNoticiasAr()
+}
+
+```
+
+## 5 - ViewModel
+El View Model tendrá como parámetro el repositorio y heredará de ViewModel().
+
+
+```kotlin
+class NewsViewModel(private val repositorio: Repositorio) : ViewModel() {
+
+    val listadoApi: LiveData<NewsResponse> = LiveData<NewsResponse>() 
+
+    init{
+        traerUltimasNoticias() 
+    }
+    fun traerUltimasNoticias() {
+        viewModelScope.launch(IO) {
+        try {
+            listadoAPi.postValue(repositorio.traerUltimasNoticasAr())
+        }catch (e: NetworkErrorException){
+
+        }
+
+
+        }
+    }
+
+}
+class NewsModelFactory(private val repositorio: Repositorio) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return NewsViewModel(repositorio) as T
+    }
+}
+```
+
+Como podemos observar, la función *NO* es de tipo suspend, ya que en esta instancia efectivamente ejecutamos la corrutina asociado al Scope del viewModel.  Cuando se ejecute, guaradará los valores en una constante de tipo LiveData.
+A su vez, creamos un Modelfactory el cual nos permitirá crear el viewmodel con un patron de delegación que veremos a continuación.
 
 
 
 
 
+## Intermedio - Injección de Dependencias
 
-<image src= "./images/1.jpg">
+Google sugiere que, para reducir el *boiler plate*, se puede crear una injección de dependencias manual. Esto lo hacemos creando una clase que herede de Application y a su vez que lo declaremos en el manifest.
+
+```Kotlin
+class NewsApp: Application() {
+
+        private val retrofitNewsClient  by lazy {
+            Retrofit.Builder()
+                .baseUrl("https://newsapi.org/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+
+        }
+
+ 
+
+    val repositorio by lazy { Repositorio(retrofitNewsClient) }
+}
+```
+
+```xml
+    <application
+        android:name=".application.NewsApp".../>
+        
+```
+
+
+## 6 - View (Fragmento)
+
+Ya en el fragmento, podemos implementar con el binding la respuesta de la api. Teóricamente sería así:
+
+```kotlin
+class HomeFragment : Fragment() {
+    private lateinit var binding: FragmentHomeBinding
+    private lateinit var application: Application
+
+    private val viewModel by activityViewModels<NewsViewModel> {
+        NewsModelFactory((application as NewsApp).repositorio)
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        application = requireActivity().application
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        val recyclerView = binding.recyclerView
+        val adapter = NewsListAdapter(this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        
+        viewModel.listadoApi.observe(viewLifecycleOwner,{
+            adapter.submitList(it)
+        })
+        return binding.root
+
+    }
+}
+
+```
+Digo teoricamente, por que esta no es la implementación final. Ya que nos falta la base de datos. Veamos el diseño:
+
+## Intermedio - Diseño de la App
+
+Pensé que como mejor alternativa, era llamar a la API, buscar la información que requiero y guardarla en mi base de datos local. El viewModel solo observará la info de la db con expeción a las búsquedas, ya que me pareció innecesario almacenar esos datos. Así, en términos pedagogicos puedo interactuar con la db en su mayoría, pero una vista sigue haciendo llamadas externas. Resumiendo, voy a crear dos tablas, una será de las útimas noticias mientras que la otra almacenará las favoritas.
+
+
+
+
+//<image src= "./images/1.jpg">
 <image src= "./2.jpg">
 
 
