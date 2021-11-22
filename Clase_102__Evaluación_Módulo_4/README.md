@@ -554,6 +554,8 @@ class DetailsFavFragment : Fragment() {
 
 ```
 
+<image src= "./images/3.jpg">
+<image src= "./images/4.jpg">
 # CODIGO
 
 
