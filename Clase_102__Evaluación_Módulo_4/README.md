@@ -142,6 +142,14 @@ interface ApiService {
         @Query(value = "apiKey") apiKey: String = API_KEY,
         @Query(value = "pageSize") pageSize: Int = 50
     ): NewsResponse
+
+    @GET("everything")
+    suspend fun buscarNoticia(
+        @Query(value = "q", encoded = true) q: String,
+        @Query("sortBy") sortBy: String="publishedAt",
+        @Query(value = "apiKey") apiKey: String = API_KEY,
+        @Query(value = "pageSize") pageSize: Int = 50
+    ):NewsResponse
     
     }
 ```
@@ -280,97 +288,282 @@ Digo teoricamente, por que esta no es la implementación final. Ya que nos falta
 
 Pensé que como mejor alternativa, era llamar a la API, buscar la información que requiero y guardarla en mi base de datos local. El viewModel solo observará la info de la db con expeción a las búsquedas, ya que me pareció innecesario almacenar esos datos. Así, en términos pedagogicos puedo interactuar con la db en su mayoría, pero una vista sigue haciendo llamadas externas. Resumiendo, voy a crear dos tablas, una será de las útimas noticias mientras que la otra almacenará las favoritas.
 
-
-
-
-//<image src= "./images/1.jpg">
-<image src= "./2.jpg">
+## Persistencia de Datos
+La logica es muy similar a lo antes expuesto, haremos un modelo, una interfaz, una base de datos los cuales se aglutinaran en el repositorio.
 
 
 
 
+//<image src= "./images/..1.jpg">
+//<image src= "./2.jpg">
+
+
+## 7 - Modelo 
+Modelaremos dos clases que representen tanto las últimas noticias como aquellas guardadas en favorito
+
+```kotlin
+@Entity(tableName = "news_table")
+data class NewsEntity(
+
+    val fuente: String = "",
+    val titulo:String = "",
+    val descripcion:String = "",
+    val url:String = "",
+    val imagenUrl:String = "",
+    val contenido:String = "",
+
+    @PrimaryKey
+    val fecha : Date  = (Calendar.getInstance().timeInMillis as Date)
+
+)
+
+@Entity(tableName = "news_fav_table")
+data class NewsFavEntity(
+
+    val fuente: String = "",
+    val titulo:String = "",
+    val descripcion:String = "",
+    val url:String = "",
+    val imagenUrl:String = "",
+    val contenido:String = "",
+
+    @PrimaryKey
+    val fecha : Date = (Calendar.getInstance().timeInMillis as Date)
+)
+```
+Notesé las anotaciones ``@Entity`` y ``@PrimaryKey``. La primera nos generará una entidad que será interpetada como una taba y la segunda hace refereinca a la llave primaria de una tabla de SQL.
+
+## 8 - DAO
+ Los objetos de acceso a datos o DAO, sonel componente principal de Room, ya que cada DAO incluye métodos que ofrecen acceso abstracta a la base de datos(Léase: Insert, Delete, Update). Aquellas operaciones que son potencialmente bloqueadora de hilos, son ejecutadas con suspend. Las que devuelven un LiveData no, ya que estas son concientes del ciclo de vida.
+
+ ```kotlin
+ @Dao
+interface NewsDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun agregarListadoNews(listadoNews: List<NewsEntity>)
+
+    @Query("SELECT * FROM news_table WHERE imagenUrl != '' AND contenido !='' ORDER BY fecha DESC")
+    fun listarUltimasNoticias(): Flow<List<NewsEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun agregarFavNews(favNews: NewsFavEntity)
+
+    @Delete
+    suspend fun borrarFavorito(favNews: NewsFavEntity)
+
+    @Query("SELECT * FROM news_fav_table")
+    fun listarFavoritos(): Flow<List<NewsFavEntity>>
+    }
+```
+
+## 9 - Base De Datos
+
+La explicación más detallada está [aquí](https://github.com/cavigna/Android_101/tree/main/Room_DataBase), pero observemos que asociamos dos entidades a nuestra base de datos, la de favoritos y ultimas noticias. También vemos como utilizamos conversores de tipo, ya que room no acepta datos complejos y necesitamso converswores especiales para ello, en nuestro caso *Date*
+
+```kotlin
+@TypeConverters(Converters::class)
+@Database(entities = [NewsEntity::class, NewsFavEntity::class], version = 1, exportSchema = false)
+abstract class BaseDeDatos : RoomDatabase() {
+    abstract fun dao() : NewsDao
+    
+    companion object {
+        @Volatile
+        private var INSTANCE: BaseDeDatos? = null
+        fun getDataBase(context: Context): BaseDeDatos {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    BaseDeDatos::class.java,
+                    "news_db"
+                ).fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+
+                instance
+            }
+        }
+    }
+}
+```
+## 10 - Repositorio
+
+Como dijimos antes, nuestro repoa hora tendrá otro argumento, el dao:
+```kotlin
+class Repositorio(private val api: ApiService, private val dao: NewsDao) {
+
+    suspend fun traerUltimasNoticiasAr() = api.traerUltimasNoticiasAr()
+    suspend fun agregarUltimasNoticasDB() {
+
+        val listadoAgregarDB = mutableListOf<NewsEntity>()
+        val listadoApi = traerUltimasNoticiasAr().articles
+        
+        // Este es un conversor del Modelo de la Api, a la entidad
+        listadoApi.forEach { art ->
+            listadoAgregarDB.add(
+                NewsEntity(
+                    fuente = art.source.name ?: "",
+                    titulo = art.title ?: "",
+                    descripcion = art.description ?: "",
+                    url = art.url ?: "",
+                    imagenUrl = art.urlToImage ?: "",
+                    contenido = art.content ?: "",
+                    fecha = formateameLaFecha(art.publishedAt)!!
+                )
+            )}
+
+        dao.agregarListadoNews(listadoAgregarDB)
+    }
+
+    fun listarNoticiasDB() = dao.listarUltimasNoticias()
+    suspend fun agregarFavorito(favEntity: NewsFavEntity) = dao.agregarFavNews(favEntity)
+    suspend fun eliminarFavorito(favEntity: NewsFavEntity) = dao.borrarFavorito(favEntity)
+    fun listarFavorito() = dao.listarFavoritos()
+    suspend fun buscarNoticia(query: String) = api.buscarNoticia(query)
+}
+```
+
+## 11 - ViewModel
+
+El View Model quedaría así
+```kotlin
+class NewsViewModel(private val repositorio: Repositorio) : ViewModel() {
+
+    val listadoNewsDB = repositorio.listarNoticiasDB().asLiveData()
+
+    var noticiaSelecionada = MutableLiveData<NewsEntity>()
+    var noticiaFavSelecionada = MutableLiveData<NewsFavEntity>()
+
+    var noticiaBuscadaDetalles = MutableLiveData<Article>()
+
+    val listadoFavoritos = repositorio.listarFavorito().asLiveData()
+
+    init {
+       agregarListadoDB() // Al iniciar, se agregará la respuesta de la api a la DB
+    }
+
+
+    private fun agregarListadoDB() {
+        viewModelScope.launch(IO) {
+        try {
+            repositorio.agregarUltimasNoticasDB()
+        }catch (e: NetworkErrorException){ }
+        }
+    }
+
+
+    fun agregarFavorito(favorito: NewsFavEntity){
+        viewModelScope.launch(IO) {
+            repositorio.agregarFavorito(favorito)
+        }
+    }
+
+    fun eliminarFavorito(favorito: NewsFavEntity){
+        viewModelScope.launch(IO) {
+            repositorio.eliminarFavorito(favorito)
+        }
+    }
+
+    val resultadoBusqueda = MutableLiveData<NewsResponse>()
+
+    fun buscarNoticia(query: String){
+        viewModelScope.launch(IO){
+            resultadoBusqueda.postValue(repositorio.buscarNoticia(query))
+        }
+
+    }
+
+}
+```
+
+## 12 - View (Fragment)
+
+```kotlin
+class DetailsFavFragment : Fragment() {
+
+    private lateinit var binding: FragmentDetailsFavBinding
+    private lateinit var application: Application
+
+    private val viewModel by activityViewModels<NewsViewModel> {
+        NewsModelFactory((application as NewsApp).repositorio)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        application = requireActivity().application
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentDetailsFavBinding.inflate(layoutInflater, container, false)
+
+        viewModel.noticiaFavSelecionada.observe(viewLifecycleOwner, { news ->
+            with(binding) {
+                imageView2.load(news.imagenUrl)
+                textViewTitulo.text = news.titulo.substringBefore("-")
+                textViewDesc.text = news.descripcion
+                textViewContenido.text = news.contenido.substringBefore("[")
+            }
+        })
+
+        binding.imageviewFavorito.setOnClickListener {
+            agregarFavorito()
+            Toast.makeText(requireContext(), "Noticia agregada", Toast.LENGTH_SHORT).show()
+
+        }
+        
+        val fb = binding.floatingActionButton
+        fb.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "*/*"
+
+            intent.putExtra("url", viewModel.noticiaSelecionada.value?.url)
+
+            if (intent.resolveActivity(activity?.packageManager!!)!=null){
+                startActivity(intent)
+            }
+        }
+
+        binding.buttonLink.setOnClickListener {
+            val url = viewModel.noticiaSelecionada.value?.url
+            openWebPage(url!!)
+        }
+        return binding.root
+
+    }
+
+    private fun agregarFavorito(){
+        val newsDetail = viewModel.noticiaSelecionada.value
+        val newsFav = NewsFavEntity(
+            fuente = newsDetail?.fuente!!,
+            titulo = newsDetail.titulo,
+            descripcion = newsDetail.descripcion ,
+            url = newsDetail.url,
+            imagenUrl = newsDetail.imagenUrl,
+            contenido = newsDetail.contenido,
+            fecha = newsDetail.fecha,
+        )
+
+        viewModel.agregarFavorito(newsFav)
+    }
+    private fun openWebPage(url: String) {
+        val webpage: Uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, webpage)
+        if (intent.resolveActivity(activity?.packageManager!!) == null) {
+            startActivity(intent)
+        }
+    }
+}
+
+```
 
 # CODIGO
 
 
 ## `PerroViewModel.kt`
 ```kotlin
-package com.example.dogspics
 
-import android.content.Context
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.asLiveData
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
-import cl.duoc.ejemploroom.getOrAwaitValue
-import com.example.dogspics.dao.PerroDao
-import com.example.dogspics.db.BaseDeDatos
-import com.example.dogspics.model.PerroFavorito
-import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-
-
-@ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
-@SmallTest
-class PerroDaoTest {
-    @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    private lateinit var database: BaseDeDatos
-    private lateinit var dao: PerroDao
-
-    @Before
-    fun setup() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(context, BaseDeDatos::class.java)
-           .allowMainThreadQueries()
-            .build()
-
-        dao = database.dao()
-    }
-
-    @After
-
-    fun teardown(){
-        database.close()
-    }
-
-    @Test
-    fun agregarFavoritoTest() =  runBlockingTest {
-        var perro  = PerroFavorito(id = 1, raza = "labrador", imagenUrl = "url")
-
-        dao.agregarFavorito(perro)
-
-        val listadoPerroFavoritoTest = dao.listadoDeFavoritos().asLiveData().getOrAwaitValue()
-
-
-        assertThat(listadoPerroFavoritoTest).contains(perro)
-
-    }
-
-    @Test
-    fun eliminarFavoritoTest() = runBlockingTest {
-        val perro = PerroFavorito(2, "boxer", "url")
-
-        dao.agregarFavorito(perro)
-        dao.eliminarFavorito(perro)
-
-        val listadoPerroFavoritoTest = dao.listadoDeFavoritos().asLiveData().getOrAwaitValue()
-
-        assertThat(listadoPerroFavoritoTest).doesNotContain(perro)
-
-    }    
-}
 ```
 
 
