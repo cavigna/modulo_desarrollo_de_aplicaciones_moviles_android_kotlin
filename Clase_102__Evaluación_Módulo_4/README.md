@@ -8,10 +8,6 @@ https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kot
 
 Luego de un milenio de clases, finalmente llegamos a la instancia del módulo final
 
-##### https://github.com/cavigna/DogsPics
-
-
-
 > Realizar una aplicación Android Kotlin de Noticias. Esta aplicación debe contar con un buscador que nos permita presentar distintas noticias relacionadas a la búsqueda realizada, además agregar un botón que permita compartir las noticias. Las noticias se deben mostrar con una imagen que tendrá asociada una url que nos debe llevar a cada noticia. Se recomienda agregar las dependencias necesarias para hacer las peticiones, agregar librerías ya sea para imágenes (Picasso) o para ejecutar acciones en segundo plano (Anko). Finalmente debe compilar y empaquetar el proyecto.
 
 
@@ -29,7 +25,7 @@ A su vez, tambien existe esta información en la página:
 
 Por lo que decidí hacer lo siguiente: 
 
-### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.**
+### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** * ñoñaso *
 
 
 
