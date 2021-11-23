@@ -2,7 +2,7 @@
 
 
 
-A lo largo de 6 meses, puedo afirmar con certeza que siento que tengo las capacidades de un desarrollador de aplicaciones moviles en Android(*trainee*). En esta instancia soy capaz de entender e implementar ciertos conceptos abstractos como por ejemplo:
+Luego de 6 meses, puedo afirmar con certeza que siento que tengo las capacidades de un desarrollador de aplicaciones moviles en Android(*trainee*). En esta instancia soy capaz de entender e implementar conceptos abstractos tales como:
 * Ciclo de vida
 * Fragmentos/ Actividades
 * Patrones de Diseño: MVVM, MVC, MVP
@@ -178,7 +178,7 @@ interface ApiService {
 
 ## 3 - Retrofit Client
 
-Será el encargado de implenetar la interfaz antes mencionadas.
+Será el encargado de implementar la interfaz antes mencionada.
 
 ```kotlin
             private val retrofitNewsClient  by lazy {
@@ -193,7 +193,7 @@ Será el encargado de implenetar la interfaz antes mencionadas.
 
 ## 4 - Repositorio
 
-Crearemos un repositorio con un argumento  el servicio definido en el punto 2. Más adelante le agregaremos otro argumento más, el ``Dao``. Por ahora quedaría así:
+Crearemos un repositorio, que tiene por argumento  el *ApiService* definido en el punto 2. Más adelante le agregaremos otro argumento más, el ``Dao``. Por ahora quedaría así:
 
 ```kotlin
 class Repositorio(private val api: ApiService) {
@@ -236,7 +236,13 @@ class NewsModelFactory(private val repositorio: Repositorio) : ViewModelProvider
 ```
 
 Como podemos observar, la función *NO* es de tipo suspend, ya que en esta instancia efectivamente ejecutamos la corrutina asociado al Scope del viewModel.  Cuando se ejecute, guaradará los valores en una constante de tipo LiveData.
-A su vez, creamos un Modelfactory el cual nos permitirá crear el viewmodel con un patron de delegación que veremos a continuación.
+A su vez, creamos un Modelfactory el cual nos permitirá crear el viewmodel con un patron de delegación:
+
+```kotlin
+    private val viewModel by activityViewModels<NewsViewModel> {
+        NewsModelFactory((application as NewsApp).repositorio)
+    }
+```
 
 ## Intermedio - Injección de Dependencias
 
@@ -304,11 +310,11 @@ class HomeFragment : Fragment() {
 
 Digo teoricamente, por que esta no es la implementación final. Ya que nos falta la base de datos. Veamos el diseño:
 
-## Intermedio - Diseño de la App
+## Segundo Intermedio  - Diseño de la App
 
-Pensé que como mejor alternativa, era llamar a la API, buscar la información que requiero y guardarla en mi base de datos local. El viewModel solo observará la info de la db con expeción a las búsquedas, ya que me pareció innecesario almacenar esos datos. Así, en términos pedagogicos puedo interactuar con la db en su mayoría, pero una vista sigue haciendo llamadas externas. Resumiendo, voy a crear dos tablas, una será de las útimas noticias mientras que la otra almacenará las favoritas.
+Decidí que el mejor curso de acción, era llamar a la API, buscar la información que requiero y guardarla en mi base de datos local.Esto se debe a que nos permite ver las ultimas noticias aún sin conexión, o al menos tener contenido en situaciones de baja conectividad. Retomando la lógica, el viewModel solo observará la info de la db con expeción a las búsquedas, ya que me pareció innecesario almacenar esos datos. Así, en *términos pedagogicos* puedo interactuar con la db en su mayoría, pero una vista sigue haciendo llamadas externas. Resumiendo, voy a crear dos tablas, una será de las útimas noticias mientras que la otra almacenará las favoritas.
 
-## Persistencia de Datos
+## Persistencia de Datos - Room DataBase
 
 La logica es muy similar a lo antes expuesto, haremos un modelo, una interfaz, una base de datos los cuales se aglutinaran en el repositorio.
 
