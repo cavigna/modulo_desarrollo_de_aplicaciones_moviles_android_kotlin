@@ -294,8 +294,6 @@ Pensé que como mejor alternativa, era llamar a la API, buscar la información q
 
 La logica es muy similar a lo antes expuesto, haremos un modelo, una interfaz, una base de datos los cuales se aglutinaran en el repositorio.
 
-//<image src= "./images/..1.jpg">
-//<image src= "./2.jpg">
 
 ## 7 - Modelo
 
