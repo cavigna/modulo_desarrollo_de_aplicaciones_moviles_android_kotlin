@@ -27,10 +27,8 @@ Por lo que decidí hacer lo siguiente:
 
 ### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** * ñoñaso *
 
+![](./images/news_video.mp4)
 
-<video width="600" height="800" controls>
-  <source src="./images/news_video.mp4" type="video/mp4">
-</video>
 
 
 Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos.
