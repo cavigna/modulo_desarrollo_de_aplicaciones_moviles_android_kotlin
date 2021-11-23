@@ -44,7 +44,7 @@ Por lo que decidí hacer lo siguiente:
 Estas seguirán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
 <image src= "./Clase_102__Evaluación_Módulo_4/images/mvvm.png" height="500px" alignment= "center">
 
-#Resultado Final
+# Resultado Final
 
 NewsApp         |  Rick and Morty App
 :-------------------------:|:-------------------------:
