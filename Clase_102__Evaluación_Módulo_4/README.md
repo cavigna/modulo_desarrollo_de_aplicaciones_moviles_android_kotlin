@@ -1,8 +1,6 @@
 # MODULO 4 | Desarrollo de Aplicaciones Móviles Android Kotlin | Ignacio Cavallo
 
-
-
-https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin
+<https://github.com/cavigna/modulo_desarrollo_de_aplicaciones_moviles_android_kotlin>
 
 ## Clase 102 | 23-11 | Evaluación del Módulo
 
@@ -10,28 +8,26 @@ Luego de un milenio de clases, finalmente llegamos a la instancia del módulo fi
 
 > Realizar una aplicación Android Kotlin de Noticias. Esta aplicación debe contar con un buscador que nos permita presentar distintas noticias relacionadas a la búsqueda realizada, además agregar un botón que permita compartir las noticias. Las noticias se deben mostrar con una imagen que tendrá asociada una url que nos debe llevar a cada noticia. Se recomienda agregar las dependencias necesarias para hacer las peticiones, agregar librerías ya sea para imágenes (Picasso) o para ejecutar acciones en segundo plano (Anko). Finalmente debe compilar y empaquetar el proyecto.
 
-
 A su vez, tambien existe esta información en la página:
 
->  Debe ser capaz de conectarse a un servicio REST y consumir datos.
+> Debe ser capaz de conectarse a un servicio REST y consumir datos.
 ● Debe mostrar un listado de información obtenida desde el servicio Rest
 ● Debe utilizar alguna técnica de caching (Persistencia local)
 ● Debe permitir modificar o almacenar los favoritos de ese listado.
 ● El usuario podrá ver un listado de los favoritos seleccionados obtenidos desde la persistencia local
 ● Usar MVVM + Retrofit + ROOM
 
+Por lo que decidí hacer lo siguiente:
+
+### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** *ñoñaso*
+
+NewsApp         |  Rick and Morty App
+:-------------------------:|:-------------------------:
+![](./images/news_video.gif)|  (![](./images/rick.gif)
 
 
 
-Por lo que decidí hacer lo siguiente: 
-
-### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** * ñoñaso *
-
-![](./images/news_video.mp4)
-
-
-
-Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos.
+Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
 
 ### MVVM
 
@@ -39,12 +35,15 @@ Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia d
 
 Como se puede observar, la vista requerirá información la cual será solicitará al *View Model* y este a su vez llamará al repositorio.
 
-# News App - (https://newsapi.org/)
+# News App - (<https://newsapi.org/>)
+
 Para que vayamos de forma ordenanda, seguiré el flujo de trabajo con el cual dearrollé la App. Siempre el punto de partida es el modelo, luego su interfaz, el objeto que implementa la interfaz, el repositorio, el viewmodel y eventualmente la vista.
+![](./images/news_video.gif)
 
 ### 1 - Modelo
 
 Si una llamada típica a la API, nos devuelve lo siguiente:
+
 ```json
 {
 "status": "ok",
@@ -67,6 +66,7 @@ Si una llamada típica a la API, nos devuelve lo siguiente:
 ```
 
 Entonces tendriamos los siguientes modelos:
+
 ```kotlin
 
 data class NewsResponse(
@@ -104,6 +104,7 @@ data class Article(
     var urlToImage: String = ""
 )
 ```
+
 Como vemos, cada uno de los atributos de cada clase, se corresponde con las entradas de Json.
 
 ```kotlin
@@ -116,7 +117,6 @@ Como vemos, cada uno de los atributos de cada clase, se corresponde con las entr
 
 Uttilizando RetroFit, creamos una interfaz que realizará las llamadas a la API. Nuestro objetivo es replicar la siguiente llamada
 **``https://newsapi.org/v2/top-headlines?country=ar&apiKey=...&pageSize=50``**
-
 
 1. Usamos la anotación ``@Get`` para avisar a que es una llamada de tipo get.
 2. Como argumento, completamos la dirección luego de la urlBase
@@ -150,6 +150,7 @@ interface ApiService {
     
     }
 ```
+
 ## 3 - Retrofit Client
 
 Será el encargado de implenetar la interfaz antes mencionadas.
@@ -166,6 +167,7 @@ Será el encargado de implenetar la interfaz antes mencionadas.
 ```
 
 ## 4 - Repositorio
+
 Crearemos un repositorio con un argumento  el servicio definido en el punto 2. Más adelante le agregaremos otro argumento más, el ``Dao``. Por ahora quedaría así:
 
 ```kotlin
@@ -177,8 +179,8 @@ class Repositorio(private val api: ApiService) {
 ```
 
 ## 5 - ViewModel
-El View Model tendrá como parámetro el repositorio y heredará de ViewModel().
 
+El View Model tendrá como parámetro el repositorio y heredará de ViewModel().
 
 ```kotlin
 class NewsViewModel(private val repositorio: Repositorio) : ViewModel() {
@@ -211,10 +213,6 @@ class NewsModelFactory(private val repositorio: Repositorio) : ViewModelProvider
 Como podemos observar, la función *NO* es de tipo suspend, ya que en esta instancia efectivamente ejecutamos la corrutina asociado al Scope del viewModel.  Cuando se ejecute, guaradará los valores en una constante de tipo LiveData.
 A su vez, creamos un Modelfactory el cual nos permitirá crear el viewmodel con un patron de delegación que veremos a continuación.
 
-
-
-
-
 ## Intermedio - Injección de Dependencias
 
 Google sugiere que, para reducir el *boiler plate*, se puede crear una injección de dependencias manual. Esto lo hacemos creando una clase que herede de Application y a su vez que lo declaremos en el manifest.
@@ -242,7 +240,6 @@ class NewsApp: Application() {
         android:name=".application.NewsApp".../>
         
 ```
-
 
 ## 6 - View (Fragmento)
 
@@ -279,6 +276,7 @@ class HomeFragment : Fragment() {
 }
 
 ```
+
 Digo teoricamente, por que esta no es la implementación final. Ya que nos falta la base de datos. Veamos el diseño:
 
 ## Intermedio - Diseño de la App
@@ -286,16 +284,14 @@ Digo teoricamente, por que esta no es la implementación final. Ya que nos falta
 Pensé que como mejor alternativa, era llamar a la API, buscar la información que requiero y guardarla en mi base de datos local. El viewModel solo observará la info de la db con expeción a las búsquedas, ya que me pareció innecesario almacenar esos datos. Así, en términos pedagogicos puedo interactuar con la db en su mayoría, pero una vista sigue haciendo llamadas externas. Resumiendo, voy a crear dos tablas, una será de las útimas noticias mientras que la otra almacenará las favoritas.
 
 ## Persistencia de Datos
+
 La logica es muy similar a lo antes expuesto, haremos un modelo, una interfaz, una base de datos los cuales se aglutinaran en el repositorio.
-
-
-
 
 //<image src= "./images/..1.jpg">
 //<image src= "./2.jpg">
 
+## 7 - Modelo
 
-## 7 - Modelo 
 Modelaremos dos clases que representen tanto las últimas noticias como aquellas guardadas en favorito
 
 ```kotlin
@@ -328,9 +324,11 @@ data class NewsFavEntity(
     val fecha : Date = (Calendar.getInstance().timeInMillis as Date)
 )
 ```
+
 Notesé las anotaciones ``@Entity`` y ``@PrimaryKey``. La primera nos generará una entidad que será interpetada como una taba y la segunda hace refereinca a la llave primaria de una tabla de SQL.
 
 ## 8 - DAO
+
  Los objetos de acceso a datos o DAO, sonel componente principal de Room, ya que cada DAO incluye métodos que ofrecen acceso abstracta a la base de datos(Léase: Insert, Delete, Update). Aquellas operaciones que son potencialmente bloqueadora de hilos, son ejecutadas con suspend. Las que devuelven un LiveData no, ya que estas son concientes del ciclo de vida.
 
  ```kotlin
@@ -382,9 +380,11 @@ abstract class BaseDeDatos : RoomDatabase() {
     }
 }
 ```
+
 ## 10 - Repositorio
 
 Como dijimos antes, nuestro repoa hora tendrá otro argumento, el dao:
+
 ```kotlin
 class Repositorio(private val api: ApiService, private val dao: NewsDao) {
 
@@ -422,6 +422,7 @@ class Repositorio(private val api: ApiService, private val dao: NewsDao) {
 ## 11 - ViewModel
 
 El View Model quedaría así
+
 ```kotlin
 class NewsViewModel(private val repositorio: Repositorio) : ViewModel() {
 
@@ -559,12 +560,8 @@ class DetailsFavFragment : Fragment() {
 <image src= "./images/4.jpg">
 # CODIGO
 
-
 ## `PerroViewModel.kt`
+
 ```kotlin
 
 ```
-
-
-
-
