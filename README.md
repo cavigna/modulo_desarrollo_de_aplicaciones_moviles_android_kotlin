@@ -2,15 +2,33 @@
 
 
 
-A lo largo de 6 meses, puedo afirmar con certeza que siento que tengo las capacidades de un desarrollador de applicaciones moviles en Android. En esta instancia soy capaz de entender e implementar ciertos
+A lo largo de 6 meses, puedo afirmar con certeza que siento que tengo las capacidades de un desarrollador de aplicaciones moviles en Android(*trainee*). En esta instancia soy capaz de entender e implementar ciertos conceptos abstractos como por ejemplo:
+* Ciclo de vida
+* Fragmentos/ Actividades
+* Patrones de Diseño: MVVM, MVC, MVP
+* Corutinas, llamadas sincrónicas y asíncronas
+* Base de Datos
+* Api Rest
+* Consumo de datos desde una API
+* Inyección de dependencias
 
-Luego de un milenio de clases, finalmente llegamos a la instancia del módulo final
+Para ilustrar mi punto, una/s imagen/es valen mas que mil palabras
+
+Primera App         |  Rick and Morty App
+:-------------------------:|:-------------------------:
+![](./Clase_102__Evaluación_Módulo_4/images/0.jpg)|  ![](./Clase_102__Evaluación_Módulo_4/images/rick.gif)
+
+Siguiendo este camino de evidenciar mis progresos, nada lo resume mejor que las applicaciones que desarrollé como parte de la evaluación final del módulo 4.
+
+#### Ejercicio/s
 
 > Realizar una aplicación Android Kotlin de Noticias. Esta aplicación debe contar con un buscador que nos permita presentar distintas noticias relacionadas a la búsqueda realizada, además agregar un botón que permita compartir las noticias. Las noticias se deben mostrar con una imagen que tendrá asociada una url que nos debe llevar a cada noticia. Se recomienda agregar las dependencias necesarias para hacer las peticiones, agregar librerías ya sea para imágenes (Picasso) o para ejecutar acciones en segundo plano (Anko). Finalmente debe compilar y empaquetar el proyecto.
 
-A su vez, tambien existe esta información en la página:
+A su vez, tambien existe esta información en un pdf en la sección de [reforzamiento](<https://github.com/cavigna/Modulo_6_Reforzamiento/blob/fe4701051f20f16bd7b92180a1b3b5697b9a3ed1/00_Materiales_de_Estudio/4%20-%20Android_Kotlin/Leccio%CC%81n%2014%20-%20Proyecto%20final%20Android.pdf>):
 
-> Debe ser capaz de conectarse a un servicio REST y consumir datos.
+
+
+> ● Debe ser capaz de conectarse a un servicio REST y consumir datos.
 ● Debe mostrar un listado de información obtenida desde el servicio Rest
 ● Debe utilizar alguna técnica de caching (Persistencia local)
 ● Debe permitir modificar o almacenar los favoritos de ese listado.
@@ -20,8 +38,12 @@ A su vez, tambien existe esta información en la página:
 
 Por lo que decidí hacer lo siguiente:
 
-### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** *ñoñaso*
+#### Desarrollar ambas aplicaciones, con el objetivo de implementar todo el arsenal aprendido durante del curso.
+
 Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
+<image src= "./Clase_102__Evaluación_Módulo_4/images/mvvm.png" height="500px" alignment= "center">
+
+#Resultado Final
 
 NewsApp         |  Rick and Morty App
 :-------------------------:|:-------------------------:
@@ -36,11 +58,6 @@ NewsApp         |  Rick and Morty App
 
 
 
-### MVVM
-
-<image src= "./Clase_102__Evaluación_Módulo_4/images/mvvm.png" height="500px" alignment= "center">
-
-Como se puede observar, la vista requerirá información la cual será solicitará al *View Model* y este a su vez llamará al repositorio.
 
 # News App - (<https://newsapi.org/>)
 
@@ -222,7 +239,7 @@ A su vez, creamos un Modelfactory el cual nos permitirá crear el viewmodel con 
 
 ## Intermedio - Injección de Dependencias
 
-Google sugiere que, para reducir el *boiler plate*, se puede crear una injección de dependencias manual. Esto lo hacemos creando una clase que herede de Application y a su vez que lo declaremos en el manifest.
+Google sugiere que, para reducir el *boiler plate* (entre otras virtudes), se puede crear una injección de dependencias manual. Esto lo hacemos creando una clase que herede de Application y a su vez que lo declaremos en el manifest.
 
 ```Kotlin
 class NewsApp: Application() {
@@ -562,8 +579,9 @@ class DetailsFavFragment : Fragment() {
 ```
 Dejo algunas imágenes de la Base de Datos
 
-<image src= "./images/3.jpg">
-<image src= "./images/4.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/3.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/4.jpg">
+
 
 ## 13 - Testing
 
@@ -679,7 +697,7 @@ class RemoteTest {
     }
 }
 ```
-<image src= "./images/5.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/5.jpg">
 
 ### Local Testing
 ```kotlin
@@ -783,7 +801,7 @@ class LocalDBTest {
     }
 }
 ```
-<image src= "./images/6.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/6.jpg">
 
 # [Rick And Morty App]() - (<https://rickandmortyapi.com/>)
 A esta altura supongo que no es necesario volver a explicar la lógica de los modelos, la db, etc. Pero si me gustaría resaltar lo siguiente:
@@ -798,7 +816,7 @@ A esta altura supongo que no es necesario volver a explicar la lógica de los mo
 
 class RickViewModel(private val repositorio: Repositorio) : ViewModel() {
     val listadoPersonajesDB = repositorio.listadoPersonajeDB().asLiveData()
-    val listadoPersonajesDB = repositorio.listadoPersonajeDB().asLiveData()
+    
     init {       
         agregarTodosPersonajesDB()
     }   
@@ -816,7 +834,7 @@ class RickViewModel(private val repositorio: Repositorio) : ViewModel() {
     }
 }
 /*
-Si lo implementara con Retro fit
+Si lo implementara con Retrofit solamente...
     var personajeRandomApi = MutableLiveData<Resultado>()
     fun buscarpersonajeRandom() {
         viewModelScope.launch(IO) {
@@ -829,7 +847,7 @@ Si lo implementara con Retro fit
 
 ```
 
-#### 1 - Busqueda De Personaje en tiempo real desde la DB
+#### 2 - Busqueda De Personaje en tiempo real desde la DB
 La vista de búsqueda solo se da en la base de datos, a traves de LiveData con una query que busca por nombre en tiempo real
 ```kotlin
 @Dao
@@ -885,7 +903,7 @@ class SearchFragment : Fragment() {
     }
 }
 ```
-#### Personaje Random desde la DB
+#### 3 - Personaje Random desde la DB
 Implementación de un método que permite buscar en un personaje de la base de datos de forma aleatoria al iniciar la applicación:
 
 ```kotlin
@@ -893,5 +911,5 @@ fun funPerRandomDB() = repositorio.personajeRandomDB(id = (1..826).random()).asL
 
 ```
    
-<image src= "./images/7.jpg">
-<image src= "./images/8.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/7.jpg">
+<image src= "./Clase_102__Evaluación_Módulo_4/images/8.jpg">
