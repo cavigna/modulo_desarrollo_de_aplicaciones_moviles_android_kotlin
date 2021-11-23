@@ -920,7 +920,16 @@ class SearchFragment : Fragment() {
 Implementación de un método que permite buscar en un personaje de la base de datos de forma aleatoria al iniciar la applicación:
 
 ```kotlin
+@Dao
+interface RickDao{
+        @Query("SELECT * FROM personajes_tabla where id =:id")
+    fun personajeRandomDB(id:Int): Flow<Personaje>
+}
+
+class RickViewModel(private val repositorio: Repositorio){
+
 fun funPerRandomDB() = repositorio.personajeRandomDB(id = (1..826).random()).asLiveData()
+}
 
 ```
    
