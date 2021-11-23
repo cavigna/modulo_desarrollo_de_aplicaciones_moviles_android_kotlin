@@ -16,15 +16,16 @@ Para ilustrar mi punto, una/s imagen/es valen mas que mil palabras
 
 Primera App         |  Rick and Morty App
 :-------------------------:|:-------------------------:
-![](./Clase_102__Evaluación_Módulo_4/images/0.jpg)|  ![](./Clase_102__Evaluación_Módulo_4/images/rick.gif)
+<img SRC="./Clase_102__Evaluación_Módulo_4/images/0.jpg" width="300px" height="600px"/>|  ![](./Clase_102__Evaluación_Módulo_4/images/rick.gif)
 
 Siguiendo este camino de evidenciar mis progresos, nada lo resume mejor que las applicaciones que desarrollé como parte de la evaluación final del módulo 4.
 
 #### Ejercicio/s
 
+[Enunciado 1.]([reforzamiento](./Clase_102__Evaluación_Módulo_4/images/1.png))
 > Realizar una aplicación Android Kotlin de Noticias. Esta aplicación debe contar con un buscador que nos permita presentar distintas noticias relacionadas a la búsqueda realizada, además agregar un botón que permita compartir las noticias. Las noticias se deben mostrar con una imagen que tendrá asociada una url que nos debe llevar a cada noticia. Se recomienda agregar las dependencias necesarias para hacer las peticiones, agregar librerías ya sea para imágenes (Picasso) o para ejecutar acciones en segundo plano (Anko). Finalmente debe compilar y empaquetar el proyecto.
 
-A su vez, tambien existe esta información en un pdf en la sección de [reforzamiento](<https://github.com/cavigna/Modulo_6_Reforzamiento/blob/fe4701051f20f16bd7b92180a1b3b5697b9a3ed1/00_Materiales_de_Estudio/4%20-%20Android_Kotlin/Leccio%CC%81n%2014%20-%20Proyecto%20final%20Android.pdf>):
+A su vez, tambien existe esta información en un pdf en la sección de [reforzamiento](./Clase_102__Evaluación_Módulo_4/images/1.png):
 
 
 
@@ -40,7 +41,7 @@ Por lo que decidí hacer lo siguiente:
 
 #### Desarrollar ambas aplicaciones, con el objetivo de implementar todo el arsenal aprendido durante del curso.
 
-Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
+Estas seguirán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
 <image src= "./Clase_102__Evaluación_Módulo_4/images/mvvm.png" height="500px" alignment= "center">
 
 #Resultado Final
@@ -351,7 +352,7 @@ Notesé las anotaciones ``@Entity`` y ``@PrimaryKey``. La primera nos generará 
 
 ## 8 - DAO
 
- Los objetos de acceso a datos o DAO, sonel componente principal de Room, ya que cada DAO incluye métodos que ofrecen acceso abstracta a la base de datos(Léase: Insert, Delete, Update). Aquellas operaciones que son potencialmente bloqueadora de hilos, son ejecutadas con suspend. Las que devuelven un LiveData no, ya que estas son concientes del ciclo de vida.
+ Los objetos de acceso a datos o DAO, sonel componente principal de Room, ya que cada DAO incluye métodos que ofrecen acceso abstracta a la base de datos(Léase: Insert, Delete, Update). Estas operaciones  son potencialmente bloqueadora de hilos, por lo cual son ejecutadas de forma suspendida. Las funciones que devuelven LiveData/Flow, no precisan ser suspendidas, ya que estas son concientes del ciclo de vida.
 
  ```kotlin
  @Dao
@@ -375,7 +376,7 @@ interface NewsDao {
 
 ## 9 - Base De Datos
 
-La explicación más detallada está [aquí](https://github.com/cavigna/Android_101/tree/main/Room_DataBase), pero observemos que asociamos dos entidades a nuestra base de datos, la de favoritos y ultimas noticias. También vemos como utilizamos conversores de tipo, ya que room no acepta datos complejos y necesitamso converswores especiales para ello, en nuestro caso *Date*
+La explicación más detallada está [aquí](https://github.com/cavigna/Android_101/tree/main/Room_DataBase), pero observemos que asociamos dos entidades a nuestra base de datos, la de favoritos y ultimas noticias. También vemos como utilizamos conversores para algunos parámetros, ya que Room no acepta datos complejos y necesitamos conversores especiales para ello, en nuestro caso *Date*
 
 ```kotlin
 @TypeConverters(Converters::class)
