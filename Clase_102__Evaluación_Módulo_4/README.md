@@ -28,6 +28,10 @@ Por lo que decidí hacer lo siguiente:
 ### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** * ñoñaso *
 
 
+<video width="600" height="800" controls>
+  <source src="./images/news_video.mp4" type="video/mp4">
+</video>
+
 
 Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos.
 
@@ -37,9 +41,8 @@ Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia d
 
 Como se puede observar, la vista requerirá información la cual será solicitará al *View Model* y este a su vez llamará al repositorio.
 
-# News App
-
-api = https://newsapi.org/
+# News App - (https://newsapi.org/)
+Para que vayamos de forma ordenanda, seguiré el flujo de trabajo con el cual dearrollé la App. Siempre el punto de partida es el modelo, luego su interfaz, el objeto que implementa la interfaz, el repositorio, el viewmodel y eventualmente la vista.
 
 ### 1 - Modelo
 
