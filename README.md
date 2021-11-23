@@ -347,7 +347,7 @@ data class NewsFavEntity(
 )
 ```
 
-Notesé las anotaciones ``@Entity`` y ``@PrimaryKey``. La primera nos generará una entidad que será interpetada como una taba y la segunda hace refereinca a la llave primaria de una tabla de SQL.
+Notesé las anotaciones ``@Entity`` y ``@PrimaryKey``. La primera nos generará una entidad que será interpetada como una taba y la segunda hace referencia a la llave primaria de una tabla de SQL.
 
 ## 8 - DAO
 
@@ -405,7 +405,7 @@ abstract class BaseDeDatos : RoomDatabase() {
 
 ## 10 - Repositorio
 
-Como dijimos antes, nuestro repoa hora tendrá otro argumento, el dao:
+Como dijimos antes, nuestro repositorio tendrá un argumento adicional, el dao:
 
 ```kotlin
 class Repositorio(private val api: ApiService, private val dao: NewsDao) {
@@ -869,8 +869,20 @@ class RickViewModel(private val repositorio: Repositorio) : ViewModel() {
 }
 
 class SearchFragment : Fragment() {
+        private val viewModel by viewModels<RickViewModel> {
+        RickModelFactory((application as RickApp).repositorio)
+    }
+            /*....*/
 
-/*....*/
+        viewModel.personajeRandomDB.observe(viewLifecycleOwner, { personaje->
+
+        unidorTarjeta(personaje)
+
+        binding.cardView.setOnLongClickListener {
+            viewModel.agregarFavorito(convertirAFav(personaje))
+            Toast.makeText(requireContext(), "Personaje Guardado", Toast.LENGTH_SHORT).show()
+            true
+        }})
         val searchView = binding.searchView2
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
