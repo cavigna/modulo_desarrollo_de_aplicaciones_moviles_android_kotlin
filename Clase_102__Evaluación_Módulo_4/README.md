@@ -16,18 +16,25 @@ A su vez, tambien existe esta información en la página:
 ● Debe permitir modificar o almacenar los favoritos de ese listado.
 ● El usuario podrá ver un listado de los favoritos seleccionados obtenidos desde la persistencia local
 ● Usar MVVM + Retrofit + ROOM
+● Apis sugeridas: https://rickandmortyapi.com/, http://www.omdbapi.com/
 
 Por lo que decidí hacer lo siguiente:
 
 ### **Hacer las dos apps, con el objetivo de aplicar todo lo aprendido durante del curso.** *ñoñaso*
+Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
 
 NewsApp         |  Rick and Morty App
 :-------------------------:|:-------------------------:
-![](./images/news_video.gif)|  (![](./images/rick.gif)
+![](./images/news_video.gif)|  ![](./images/rick.gif)
+[News App](https://github.com/cavigna/RickAndMortyApp) |[Rick and Morty](https://github.com/cavigna/RickAndMortyApp)
 
 
+ #### Para el código completo dejo los links a los repos:
 
-Ambas utilizarán el patron de diseño MVVM, como también uso de persistencia de datos. Ambas se valdran de una fuente remota de datos, la almacenarán en una db para luego ser observadas por la vista.
+### [News App](https://github.com/cavigna/RickAndMortyApp)  
+### [Rick and Morty](https://github.com/cavigna/RickAndMortyApp)
+
+
 
 ### MVVM
 
@@ -37,8 +44,8 @@ Como se puede observar, la vista requerirá información la cual será solicitar
 
 # News App - (<https://newsapi.org/>)
 
-Para que vayamos de forma ordenanda, seguiré el flujo de trabajo con el cual dearrollé la App. Siempre el punto de partida es el modelo, luego su interfaz, el objeto que implementa la interfaz, el repositorio, el viewmodel y eventualmente la vista.
-![](./images/news_video.gif)
+Para que vayamos de forma ordenanda, seguiré el flujo de trabajo con el cual dearrollé la App. Siempre el punto de partida es el modelo, luego su interfaz, el objeto que implementa la interfaz, el repositorio, el viewmodel y eventualmente la vista. A su vez implementé algunos test insturmentales que los dejaré al final de este apartado.
+
 
 ### 1 - Modelo
 
@@ -555,13 +562,338 @@ class DetailsFavFragment : Fragment() {
 }
 
 ```
+Dejo algunas imágenes de la Base de Datos
 
 <image src= "./images/3.jpg">
 <image src= "./images/4.jpg">
-# CODIGO
 
-## `PerroViewModel.kt`
+## 13 - Testing
+
+### Remote Testing
 
 ```kotlin
 
+@ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
+@MediumTest
+class RemoteTest {
+
+    @get: Rule
+
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val mockWebServer = MockWebServer()
+    private val MOCK_WEBSERVER_PORT = 8000
+    private lateinit var repositorioTest: Repositorio
+    private lateinit var repositorio: Repositorio
+
+    private lateinit var database: BaseDeDatos
+    private lateinit var dao: NewsDao
+
+    private val dispatcher = TestCoroutineDispatcher()
+    private val testScope = TestCoroutineScope(dispatcher)
+
+    @Before
+    fun setup() {
+        mockWebServer.start(MOCK_WEBSERVER_PORT)
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(context, BaseDeDatos::class.java)
+            .allowMainThreadQueries()
+            .build()
+
+        dao = database.dao()
+
+        val retrofitClientTest by lazy {
+            Retrofit.Builder()
+                .baseUrl(mockWebServer.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+        }
+
+
+        val retrofitClient by lazy {
+            Retrofit.Builder()
+                .baseUrl("https://newsapi.org/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+
+        }
+
+
+
+        repositorioTest = Repositorio(retrofitClientTest, dao)
+        repositorio = Repositorio(retrofitClient, dao)
+    }
+
+    @After
+    fun teardown(){
+        mockWebServer.shutdown()
+        database.close()
+    }
+
+    @Test
+    fun noticiaComparador(){
+        val articuloOriginal = Article(
+            "Hernán Cappiello",
+            "La Corte Suprema de Justicia dejó firme una condena a 3 años y seis meses de prisión contra el exfuncionario Germán Kammerath por negociaciones incompatibles con la función pública cuando fue intende… [+3581 chars]",
+            "Es por negociaciones incompatibles con la función pública en 2000; hubo disidencias de los jueces Rosenkrantz y Maqueda porque dicen que se violó el plazo razonable para el proceso",
+            "2021-10-28T19:52:30Z",
+            Source("la-nacion","La Nacion"),
+            "La Corte dejó firme una sentencia a 3 años y 6 meses contra el ex funcionario Germán Kammerath",
+            "https://www.lanacion.com.ar/politica/la-corte-dejo-firme-una-sentencia-a-3-anos-y-6-meses-contra-el-ex-funcionario-german-kammerath-nid28102021/",
+            "https://resizer.glanacion.com/resizer/uWI-9SusBymhJT-RI2p5q_7WNLE=/768x0/filters:quality(80)/cloudfront-us-east-1.images.arcpublishing.com/lanacionar/CSTROHTH5JHIXO56DLK4ZAW4MM.jpg"
+        )
+
+        mockWebServer.apply{
+            enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(
+                        FileReader.readStringFromFile("mock_response.json")
+                    )
+            )
+        }
+
+        testScope.launch {
+            val articulo = repositorioTest.buscarNoticia("germán kammerath").articles[0]
+            assertThat(articuloOriginal).isEqualTo(articulo)
+        }
+
+    }
+
+    @Test
+    fun buscarNoticiaTest(){
+        mockWebServer.apply {
+            MockResponse()
+                .setBody(
+                    FileReader.readStringFromFile("mock_response.json")
+                )
+        }
+
+        testScope.launch {
+            val noticiaApi = repositorio.buscarNoticia("germán kammerath").articles
+            val noticiaMock = repositorioTest.buscarNoticia("germán kammerath").articles
+
+            assertThat(noticiaApi).isEqualTo(noticiaMock)
+        }
+    }
+}
 ```
+<image src= "./images/5.jpg">
+
+### Local Testing
+```kotlin
+@ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
+@SmallTest
+class LocalDBTest {
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private lateinit var database: BaseDeDatos
+    private  lateinit var dao : NewsDao
+
+    private val noticiaFavorita = NewsFavEntity(
+        "la nación",
+        "Algun título escandaloso",
+        "aca va un contenido bien amarrillista",
+        fecha = Calendar.getInstance().time
+    )
+
+    private val noticiaABorrar = NewsFavEntity(
+        "la nación",
+        "Algun título escandaloso a borrar",
+        "aca va un contenido bien amarrillista, pero como es tan amarillo, lo borramos",
+        fecha = Calendar.getInstance().time
+    )
+
+
+    private val noticia = NewsEntity(
+        "la nación",
+        "Algun título escandaloso",
+        "aca va un contenido bien amarrillista",
+        fecha = Calendar.getInstance().time,
+        imagenUrl = "http algo",
+        contenido = "Contenido muy noticioso"
+    )
+
+    private val noticiaDos = NewsEntity(
+        "la nación",
+        "Algun título escandaloso a borrar",
+        "aca va un contenido bien amarrillista, pero como es tan amarillo, lo borramos",
+        fecha = Calendar.getInstance().time,
+        imagenUrl = "http algo",
+        contenido = "Contenido muy noticioso"
+    )
+    @Before
+    fun setup(){
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        database = Room.inMemoryDatabaseBuilder(context, BaseDeDatos::class.java)
+            .allowMainThreadQueries()
+            .build()
+
+        dao =  database.dao()
+    }
+
+    @After
+    fun teardown(){
+        database.close()
+    }
+
+    @Test
+    fun agergarListadoUltimasNoticiasTest() {
+        val listadoNoticiasApi = listOf(noticia, noticiaDos)
+        runBlockingTest {
+
+
+            dao.agregarListadoNews(listadoNoticiasApi)
+
+            val listadoNoticiasLD = dao.listarUltimasNoticias().asLiveData().getOrAwaitValue()
+
+            assertThat(listadoNoticiasLD).contains(noticia)
+            assertThat(listadoNoticiasLD).contains(noticiaDos)
+
+        }
+    }
+    @Test
+    fun agergarFavoritoTest() {
+
+        runBlockingTest {
+
+
+            dao.agregarFavNews(noticiaFavorita)
+
+            val listadoNoticiasTest = dao.listarFavoritos().asLiveData().getOrAwaitValue()
+
+            assertThat(listadoNoticiasTest).contains(noticiaFavorita)
+        }
+    }
+
+    @Test
+    fun eliminarFavoritoTest() = runBlockingTest {
+
+        dao.agregarFavNews(noticiaFavorita)
+        dao.borrarFavorito(noticiaABorrar)
+
+        val listadoNoticias = dao.listarFavoritos().asLiveData().getOrAwaitValue()
+
+        assertThat(listadoNoticias).doesNotContain(noticiaABorrar)
+    }
+}
+```
+<image src= "./images/6.jpg">
+
+# [Rick And Morty App]() - (<https://rickandmortyapi.com/>)
+A esta altura supongo que no es necesario volver a explicar la lógica de los modelos, la db, etc. Pero si me gustaría resaltar lo siguiente:
+
+#### 1 - Consumo de datos Locales
+
+*Esta aplicación consume de una API rest para almacenar TODOS los personajes enla base de datos local. Una vez que esa llamada remota finaliza, la lógica de la app se enmarca dentro de la base de datos.*
+
+```kotlin
+
+
+
+class RickViewModel(private val repositorio: Repositorio) : ViewModel() {
+    val listadoPersonajesDB = repositorio.listadoPersonajeDB().asLiveData()
+    val listadoPersonajesDB = repositorio.listadoPersonajeDB().asLiveData()
+    init {       
+        agregarTodosPersonajesDB()
+    }   
+
+    fun agregarTodosPersonajesDB() {
+
+        viewModelScope.launch(IO) {
+            withContext(Main) {
+                for (i in 1..42) {
+                    val listadoApi = repositorio.listadoPersonajesTodosApi(pagina = i).resultados
+                    repositorio.agregarListadoPersonaDB(mapearAPItoDB(listadoApi))
+                }
+            }
+        }
+    }
+}
+/*
+Si lo implementara con Retro fit
+    var personajeRandomApi = MutableLiveData<Resultado>()
+    fun buscarpersonajeRandom() {
+        viewModelScope.launch(IO) {
+            val personaje = repositorio.personajeRandomApi()
+            personajeRandomApi.postValue(personaje)
+
+        }
+    }
+ */
+
+```
+
+#### 1 - Busqueda De Personaje en tiempo real desde la DB
+La vista de búsqueda solo se da en la base de datos, a traves de LiveData con una query que busca por nombre en tiempo real
+```kotlin
+@Dao
+interface RickDao {
+    //.....//
+    @Query("SELECT * FROM personajes_tabla WHERE name LIKE :search")
+    fun buscarPersonaje(search: String?): Flow<List<Personaje>>
+}
+
+class Repositorio(private val api: ApiService, private val dao: RickDao) {
+//...//
+    fun buscarPersonaje(query:String) = dao.buscarPersonaje(query)
+}
+
+
+class RickViewModel(private val repositorio: Repositorio) : ViewModel() {
+
+    fun buscarPersonaje(query:String) = repositorio.buscarPersonaje(query).asLiveData()
+}
+
+class SearchFragment : Fragment() {
+
+/*....*/
+        val searchView = binding.searchView2
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query!= null){
+                    searchDB(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText!= null){
+                    searchDB(newText)
+                }
+                return true
+            }
+
+        })
+
+        /* ...*/
+
+    private fun searchDB(query:String){
+    val searchQuery = "%$query%"
+
+    viewModel.buscarPersonaje(searchQuery).observe(viewLifecycleOwner, {
+        adapter.submitList(it)
+    })
+
+    }
+}
+```
+#### Personaje Random desde la DB
+Implementación de un método que permite buscar en un personaje de la base de datos de forma aleatoria al iniciar la applicación:
+
+```kotlin
+fun funPerRandomDB() = repositorio.personajeRandomDB(id = (1..826).random()).asLiveData()
+
+```
+   
+<image src= "./images/7.jpg">
+<image src= "./images/8.jpg">
