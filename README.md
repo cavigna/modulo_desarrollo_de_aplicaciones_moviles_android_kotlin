@@ -444,12 +444,12 @@ class Repositorio(private val api: ApiService, private val dao: NewsDao) {
 
 ## 11 - ViewModel
 
-El View Model quedaría así
+El View Model quedaría de la siguiente manera:
 
 ```kotlin
 class NewsViewModel(private val repositorio: Repositorio) : ViewModel() {
 
-    val listadoNewsDB = repositorio.listarNoticiasDB().asLiveData()
+    val listadoNewsDB = repositorio.listarNoticiasDB().asLiveData() // Esta será nuestra fuente de datos en la app
 
     var noticiaSelecionada = MutableLiveData<NewsEntity>()
     var noticiaFavSelecionada = MutableLiveData<NewsFavEntity>()
